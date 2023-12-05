@@ -1,6 +1,9 @@
 package ru.lamp.service;
 
-import ru.lamp.model.PublicKeyInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.lamp.model.PublicKey;
+
 import java.util.Random;
 
 /**
@@ -8,7 +11,13 @@ import java.util.Random;
  * @author Бажов Никита
  * @version 1.0.0
  */
+
 public class KeyGeneratorImpl implements KeyGenerator {
+
+    /**
+     * Логгер.
+     */
+    private static Logger logger = LoggerFactory.getLogger(KeyGeneratorImpl.class);
     /**
      * Рандом-компонент для генерации ключа.
      */
@@ -23,14 +32,24 @@ public class KeyGeneratorImpl implements KeyGenerator {
     }
 
     /**
-     * Функция генерирует ключ, не зарегистрированный в системе, по заданной длинне.
+     * Функция генерирует ключ по заданной длинне.
      * @param length длина генерируемого ключа.
-     * @return Ключ, не зарегистрированный в системе.
+     * @return Возвращает публичный ключ.
+     * @throws RuntimeException Если длинна ключа меньше 1, выбрасывает исключение.
      */
     @Override
-    public PublicKeyInfo generatePublicKey(int length) {
+    public PublicKey generatePublicKey(int length) {
+        logger.info("Check key length. . .");
+        if (length < 1) {
+            logger.info("Check failed!");
+            throw new RuntimeException(String.format("Length: %s is invalid!", length));
+        }
+
+        logger.info("Check pass.");
         byte[] bytes = new byte[length];
         random.nextBytes(bytes);
-        return new PublicKeyInfo(bytes);
+
+        logger.info("Generated new key.");
+        return new PublicKey(bytes);
     }
 }

@@ -1,64 +1,75 @@
 package ru.lamp.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.lamp.model.Client;
 import ru.lamp.model.PublicKey;
-import ru.lamp.model.PublicKeyInfo;
 
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Реализация интерфейса системы хранения ключей.
+ *
  * @author Бажов Никита
  * @version 1.0.0
  */
 public class KeyStorageImpl implements KeyStorage {
 
     /**
+     * Логгер.
+     */
+    private static Logger logger = LoggerFactory.getLogger(KeyStorageImpl.class);
+
+    /**
      * База данных ключей.
      */
-    private final Map<Long, PublicKey> storage;
+    private final Map<Client, PublicKey> storage;
 
     /**
      * Конструктор для создания хранилища.
+     *
      * @param storage объект таблицы ключей.
      */
-    public KeyStorageImpl(Map<Long, PublicKey> storage) {
+    public KeyStorageImpl(Map<Client, PublicKey> storage) {
         this.storage = storage;
     }
 
     /**
      * Метод для получения ключа по уникальному идентификатору.
      * Проверяет наличие ключа в таблице и, если он там есть, достает его.
-     * @param keyId уникальный идентификатор ключа.
+     *
+     * @param client уникальный идентификатор ключа.
      * @return В случае наличия ключа, возвращает его.
      * @throws RuntimeException Если ключ не найден, выбрасывает исключение с сообщением.
      */
     @Override
-    public PublicKey getKeyById(Long keyId) {
-        if (containsKey(keyId)){
-            return storage.get(keyId);
+    public PublicKey getKey(Client client) {
+        if (containsKey(client)) {
+            logger.info(String.format("Key with client: %s was found.", client));
+            return storage.get(client);
         }
 
-        throw new RuntimeException(String.format("Key with id: %s was not found!", keyId));
+        throw new RuntimeException(String.format("Key with id: %s was not found!", client));
     }
 
     /**
-     * Метод для регистрации ключа в системе.
-     * Создает новый объект ключа и сохраняет его в таблице {@link storage}.
-     * @param publicKeyInfo объект ключа для регистрации.
+     * Метод сохраняет ключ в таблице и связывает его с клиентом {@link storage}.
+     *
+     * @param publicKey объект ключа для регистрации.
+     * @param client    клиент, сохраняющий ключ.
      * @return Новый объект ключа.
+     * @throws RuntimeException В случае наличия клиента в хранилище, выбрасывается исключение.
      */
     @Override
-    public PublicKey addNewKey(PublicKeyInfo publicKeyInfo) {
-        Random random = new Random();
-        Long keyId = random.nextLong();
-
-        while (!containsKey(keyId)) {
-            keyId = random.nextLong();
+    public PublicKey addNewKey(Client client, PublicKey publicKey) {
+        if (containsKey(client)) {
+            logger.info(String.format("Key with client: %s already exist!", client));
+            throw new RuntimeException(String.format("Key with client: %s already existed!", client));
         }
 
-        PublicKey publicKey = new PublicKey(keyId, publicKeyInfo);
-        storage.put(keyId, publicKey);
+        logger.info("Adding new key.");
+        storage.put(client, publicKey);
 
         return publicKey;
     }
@@ -66,42 +77,49 @@ public class KeyStorageImpl implements KeyStorage {
     /**
      * Метод для изменения данных в существующем ключе.
      * Проверяет наличие ключа в таблице и, если он там есть, изменяет его.
-     * @param keyId Идентификатор ключа для изменения.
+     *
+     * @param client    Идентификатор ключа для изменения.
      * @param publicKey Ключ с новыми данными.
      * @return Возвращает предыдущую версию ключа.
      * @throws RuntimeException Если ключ не найден, выбрасывает исключение с сообщением.
      */
     @Override
-    public PublicKey updateKey(Long keyId, PublicKey publicKey) {
-        if (containsKey(keyId)) {
-            return storage.put(keyId, publicKey);
+    public PublicKey updateKey(Client client, PublicKey publicKey) {
+        if (containsKey(client)) {
+            logger.info(String.format("Updating key with client: %s.", client));
+            return storage.put(client, publicKey);
         }
 
-        throw new RuntimeException(String.format("Key with id: %s was not found!", keyId));
+
+        throw new RuntimeException(String.format("Key with id: %s was not found!", client));
     }
 
     /**
      * Метод для удаления данных в существующем ключе.
      * Проверяет наличие ключа в таблице и, если он там есть, удаляет его.
-     * @param keyId Идентификатор ключа для удаления.
+     *
+     * @param client Идентификатор ключа для удаления.
      * @return Возвращает удаленный ключ.
      * @throws RuntimeException Если ключ не найден, выбрасывает исключение с сообщением.
      */
     @Override
-    public PublicKey deleteKey(Long keyId) {
-        if (containsKey(keyId)) {
-            return storage.remove(keyId);
+    public PublicKey deleteKey(Client client) {
+        if (containsKey(client)) {
+            logger.info(String.format("Deleting key with client: %s.", client));
+            return storage.remove(client);
         }
 
-        throw new RuntimeException(String.format("Key with id: %s was not found!", keyId));
+        throw new RuntimeException(String.format("Key with id: %s was not found!", client));
     }
 
     /**
      * Метод для проверки существования ключа в таблице.
-     * @param keyId Идентификатор ключа для проверки.
+     *
+     * @param client Идентификатор ключа для проверки.
      * @return Возвращает true если ключ с представленным id есть в таблице, и false если такого ключа нет.
      */
-    private boolean containsKey(Long keyId){
-        return storage.containsKey(keyId);
+    private boolean containsKey(Client client) {
+        logger.info("Search key in storage.");
+        return storage.containsKey(client);
     }
 }

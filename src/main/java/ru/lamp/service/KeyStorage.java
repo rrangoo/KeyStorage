@@ -1,7 +1,7 @@
 package ru.lamp.service;
 
+import ru.lamp.model.Client;
 import ru.lamp.model.PublicKey;
-import ru.lamp.model.PublicKeyInfo;
 
 /**
  * Интерфейс, описывающий систему хранения ключей.
@@ -12,31 +12,32 @@ import ru.lamp.model.PublicKeyInfo;
 public interface KeyStorage {
 
     /**
-     * Метод для получения ключа по уникальному идентификатору.
-     * @param keyId уникальный идентификатор ключа.
+     * Метод для получения ключа по клиенту.
+     * @param client клиент.
      * @return В случае наличия ключа, возвращает его.
      */
-    PublicKey getKeyById(Long keyId);
+    PublicKey getKey(Client client);
 
     /**
      * Метод для регистрации ключа в системе.
-     * @param publicKeyInfo объект ключа для регистрации.
+     * @param publicKey объект ключа для регистрации.
+     * @param client клиент для привязки ключа.
      * @return Возвращает объект нового ключа, сохраненного в системе.
      */
-    PublicKey addNewKey(PublicKeyInfo publicKeyInfo);
+    PublicKey addNewKey(Client client, PublicKey publicKey);
 
     /**
      * Метод для изменения данных в существующем ключе.
-     * @param keyId Идентификатор ключа для изменения.
+     * @param client Идентификатор ключа для изменения.
      * @param publicKey Ключ с новыми данными.
      * @return В случае успеха, возвращает предыдущую версию ключа.
      */
-    PublicKey updateKey(Long keyId, PublicKey publicKey);
+    PublicKey updateKey(Client client, PublicKey publicKey);
 
     /**
      * Метод для удаления существующего ключа.
-     * @param keyId Идентификатор ключа для изменения.
+     * @param client Идентификатор ключа для изменения.
      * @return В случае успеха, возвращает удаленный ключ.
      */
-    PublicKey deleteKey(Long keyId);
+    PublicKey deleteKey(Client client);
 }

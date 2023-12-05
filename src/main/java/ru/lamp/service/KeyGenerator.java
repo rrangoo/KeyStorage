@@ -1,6 +1,6 @@
 package ru.lamp.service;
 
-import ru.lamp.model.PublicKeyInfo;
+import ru.lamp.model.PublicKey;
 
 /**
  * Интерфейс, описывающий генератор ключей.
@@ -9,9 +9,9 @@ import ru.lamp.model.PublicKeyInfo;
  */
 public interface KeyGenerator {
     /**
-     * Метод, генерирующий новый ключ, который не зарегистрирован в системе.
+     * Метод, генерирующий новый ключ.
      * @param length длина генерируемого ключа.
-     * @return Возвращает объект публичного ключа, который еще не зарегистрирован в системе.
+     * @return Возвращает объект публичного ключа.
      */
-    PublicKeyInfo generatePublicKey(int length);
+    PublicKey generatePublicKey(int length);
 }

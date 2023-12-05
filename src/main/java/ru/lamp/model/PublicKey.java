@@ -1,15 +1,11 @@
 package ru.lamp.model;
 
 /**
- * Класс побличного ключа, который зарегистрирован в системе.
+ * Класс публичного ключа.
  * @author Бажов Никита
  * @version 1.0.0
  */
 public class PublicKey {
-    /**
-     * Уникальный идентификатор ключа в системе.
-     */
-    private final Long keyId;
 
     /**
      * Представление ключа в виде массива байт.
@@ -18,20 +14,10 @@ public class PublicKey {
 
     /**
      * Конструктор для создания объекта ключа в системе из полученных данных.
-     * @param keyId Уникальный идентификатор ключа в системе.
-     * @param publicKeyInfo Класс, хранящий только представление ключа {@link key}.
+     * @param key Класс, хранящий только представление ключа {@link key}.
      */
-    public PublicKey(Long keyId, PublicKeyInfo publicKeyInfo){
-        this.keyId = keyId;
-        this.key = publicKeyInfo.getKey();
-    }
-
-    /**
-     * Геттер для поля keyId {@link keyId}.
-     * @return Возвращает уникальный идентификатор ключа.
-     */
-    public Long getKeyId() {
-        return keyId;
+    public PublicKey(byte[] key){
+        this.key = key;
     }
 
     /**
